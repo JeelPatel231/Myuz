@@ -1,0 +1,92 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.google.devtools.ksp' version '1.7.0-1.0.6' // Depends on your kotlin version
+}
+
+android {
+    namespace 'xyz.jeelpatel.myuz_compose'
+    compileSdk 33
+
+    defaultConfig {
+        applicationId "xyz.jeelpatel.myuz_compose"
+        minSdk 24
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.debug
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion '1.2.0'
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+    applicationVariants.all { variant ->
+        kotlin.sourceSets {
+            getByName(variant.name) {
+                kotlin.srcDir("build/generated/ksp/${variant.name}/kotlin")
+            }
+        }
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.core:core-ktx:1.9.0'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
+    implementation 'androidx.activity:activity-compose:1.6.0'
+    implementation "androidx.compose.ui:ui:$compose_ui_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
+    implementation 'androidx.compose.material:material:1.2.1'
+
+    debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
+
+    // use this specific hash to bypass rhino class not found error
+    implementation 'com.github.TeamNewPipe:NewPipeExtractor:6a858368c86bc9a55abee586eb6c733e86c26b97'// youtube scraper
+    implementation 'io.coil-kt:coil-compose:2.2.2'                  // image loading lib
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1' // viewmodel
+
+    // Paging Compose
+    implementation "com.google.accompanist:accompanist-pager:0.13.0"
+//    implementation "com.google.accompanist:accompanist-pager-indicators:0.13.0"
+
+    implementation 'io.github.raamcosta.compose-destinations:core:1.6.22-beta' // navigation lib
+    ksp 'io.github.raamcosta.compose-destinations:ksp:1.7.22-beta'              // ksp dep for navigation lib
+
+    // exoplayer the lord and saviour for media files
+//    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.1'
+
+    implementation 'com.google.android.exoplayer:exoplayer:2.18.1'
+
+    // UI DEP until i figure out how to use core player without this
+//    implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.1'
+
+    //noinspection GradleDependency
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'             // http requests
+}
