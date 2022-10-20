@@ -22,3 +22,4 @@
 
 # https://github.com/TeamNewPipe/NewPipeExtractor/issues/375
 -keep class org.schabi.newpipe.extractor.timeago.patterns.** { *; }
+-keep class org.mozilla.javascript.** { *; }
