@@ -2,7 +2,7 @@ package xyz.jeelpatel.myuz_compose.views
 
 import android.content.Context
 import androidx.compose.animation.*
-import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
@@ -84,7 +84,7 @@ object PlayerViewModel : ViewModel(){
 }
 
 @Composable
-fun VideoPlayer() {
+fun BottomPlayer(visible: Boolean,onClick : () -> Unit) {
     LaunchedEffect(key1 = Unit){
         while(true){
             if (PlayerViewModel.exoPlayer.isPlaying) {
@@ -97,16 +97,13 @@ fun VideoPlayer() {
     val play_arrow_btn = painterResource(R.drawable.round_play_arrow_24)
     val pause_btn = painterResource(R.drawable.round_pause_24)
 
-    val visibleState = remember { MutableTransitionState(false) }
-    visibleState.targetState = (PlayerViewModel.currentMediaItem != null)
-
-    AnimatedVisibility(visibleState,
+    AnimatedVisibility((PlayerViewModel.currentMediaItem != null && visible),
         enter = slideInVertically(
             initialOffsetY = { 50 }
         ) + fadeIn(initialAlpha = 0.3f),
         exit = fadeOut()
     ) {
-        Column {
+        Column(Modifier.clickable(onClick = onClick)) {
             Row(Modifier.padding(8.dp)) {
                 Column(modifier=Modifier.weight(1F)){
                     Text(

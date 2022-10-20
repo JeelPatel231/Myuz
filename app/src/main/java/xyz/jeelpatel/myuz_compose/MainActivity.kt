@@ -16,7 +16,8 @@ import xyz.jeelpatel.myuz_compose.newpipeutils.initNewPipeExtractor
 import xyz.jeelpatel.myuz_compose.ui.theme.MyuzcomposeTheme
 import xyz.jeelpatel.myuz_compose.views.NavGraphs
 import xyz.jeelpatel.myuz_compose.views.PlayerViewModel
-import xyz.jeelpatel.myuz_compose.views.VideoPlayer
+import xyz.jeelpatel.myuz_compose.views.BottomPlayer
+import xyz.jeelpatel.myuz_compose.views.MusicPlayer
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("SourceLockedOrientationActivity")
@@ -35,15 +36,17 @@ class MainActivity : ComponentActivity() {
                     activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
                     PlayerViewModel.initPlayer(context)
-
                     DisposableEffect(key1 = Unit) { onDispose { PlayerViewModel.exoPlayer.release() } }
+
+                    var expanded by remember { mutableStateOf(false) }
 
                     Scaffold(
                         bottomBar = {
-                            VideoPlayer()
+                            BottomPlayer(visible=!expanded,onClick = {expanded = !expanded })
                         },
                         content = {
                             DestinationsNavHost(navGraph = NavGraphs.root, modifier = Modifier.padding(it))
+                            MusicPlayer(toggle = expanded, onBackPressed = {expanded = !expanded})
                         }
                     )
                 }
