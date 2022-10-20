@@ -26,9 +26,11 @@ fun SearchBar(screens: Array<SearchListViewModel<out InfoItem>>) {
         onValueChange = { text = it },
         keyboardActions = KeyboardActions(
             onDone = {
-                focusManager.clearFocus()
-                screens.forEach { it.init(text.text) }
-                keyboardController?.hide()
+                if (text.text.trim().isNotBlank()) {
+                    focusManager.clearFocus()
+                    screens.forEach { it.init(text.text.trim()) }
+                    keyboardController?.hide()
+                }
             },
         ),
         singleLine = true,
