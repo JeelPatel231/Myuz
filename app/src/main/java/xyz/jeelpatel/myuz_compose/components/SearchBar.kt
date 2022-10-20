@@ -10,11 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.TextFieldValue
+import org.schabi.newpipe.extractor.InfoItem
 import xyz.jeelpatel.myuz_compose.viewModels.SearchListViewModel
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun SearchBar(screens: Array<SearchListViewModel>) {
+fun SearchBar(screens: Array<SearchListViewModel<out InfoItem>>) {
     var text by remember { mutableStateOf(TextFieldValue()) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current

@@ -19,7 +19,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.schabi.newpipe.extractor.ServiceList
-import org.schabi.newpipe.extractor.stream.StreamExtractor
+import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import xyz.jeelpatel.myuz_compose.R
 
 object PlayerViewModel : ViewModel(){
@@ -27,7 +27,7 @@ object PlayerViewModel : ViewModel(){
 
     var isPlaying by mutableStateOf(false)
         private set
-    var currentMediaItem: StreamExtractor? by mutableStateOf(null)
+    var currentMediaItem: StreamInfoItem? by mutableStateOf(null)
         private set
     var playbackState by mutableStateOf(0)
         private set
@@ -65,18 +65,18 @@ object PlayerViewModel : ViewModel(){
         if (exoPlayer.isPlaying) exoPlayer.pause() else exoPlayer.play()
     }
 
-    fun play(url : String) { viewModelScope.launch {
-        lateinit var media: MediaItem
+    fun play(media : StreamInfoItem) { viewModelScope.launch {
         exoPlayer.stop()
+        currentMediaItem = media
+        lateinit var _exoMedia: MediaItem
         withContext(Dispatchers.IO) {
-            val se = ServiceList.YouTube.getStreamExtractor(url).apply { fetchPage() }
-            currentMediaItem = se
+            val se = ServiceList.YouTube.getStreamExtractor(media.url).apply { fetchPage() }
             val item = se.audioStreams
             item.sortBy { it.averageBitrate } // sort with avg bitrate
-            media = MediaItem.fromUri(item.last().content) // use the maximum bitrate available
+            _exoMedia = MediaItem.fromUri(item.last().content) // use the maximum bitrate available
         }
         exoPlayer.apply{
-            setMediaItem(media)
+            setMediaItem(_exoMedia)
             prepare()
             play()
         }
@@ -125,10 +125,13 @@ fun VideoPlayer() {
                     )
                 }
             }
-            LinearProgressIndicator(
-                modifier = Modifier.fillMaxWidth(),
-                progress = PlayerViewModel.currentPosition / PlayerViewModel.exoPlayer.contentDuration.toFloat()
-            )
+            when (PlayerViewModel.playbackState){
+                0 , 1 , 2 -> LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                3 , 4 -> LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth(),
+                    progress = PlayerViewModel.currentPosition / PlayerViewModel.exoPlayer.contentDuration.toFloat()
+                )
+            }
         }
     }
 }

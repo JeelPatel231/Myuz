@@ -18,6 +18,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.schabi.newpipe.extractor.InfoItem
+import org.schabi.newpipe.extractor.channel.ChannelInfoItem
+import org.schabi.newpipe.extractor.playlist.PlaylistInfoItem
+import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import xyz.jeelpatel.myuz_compose.viewModels.SearchListViewModel
 import xyz.jeelpatel.myuz_compose.viewModels.TabNames
 import xyz.jeelpatel.myuz_compose.newpipeutils.LoadStates
@@ -29,7 +32,7 @@ import xyz.jeelpatel.myuz_compose.views.destinations.PlaylistDetailsDestination
 fun LazyListState.isScrolledToEnd() = layoutInfo.visibleItemsInfo.lastOrNull()?.index == layoutInfo.totalItemsCount - 1
 
 @Composable
-fun SearchResultEntry(media: InfoItem,onClick:()->Unit){
+fun <T:InfoItem> SearchResultEntry(media: T, onClick:()->Unit){
     Row(
         Modifier
             .fillMaxWidth()
@@ -45,23 +48,24 @@ fun SearchResultEntry(media: InfoItem,onClick:()->Unit){
 //            placeholder = painterResource(R.drawable.ic_launcher_background),
         )
         Text(
-            modifier = Modifier.padding(8.dp,0.dp,0.dp,0.dp),
-            text = media.name
+            modifier = Modifier.padding(8.dp,0.dp,0.dp,0.dp).align(Alignment.CenterVertically),
+            text = media.name,
+            maxLines = 2,
         )
     }
 }
 
 fun searchItemOnClick(media:InfoItem, tabName:TabNames, navigator: DestinationsNavigator) {
     return when (tabName){
-        TabNames.SONG -> { PlayerViewModel.play(media.url) }
-        TabNames.ARTIST -> navigator.navigate(ArtistDetailsDestination(media))
-        TabNames.ALBUM -> navigator.navigate(AlbumDetailsDestination(media))
-        TabNames.PLAYLIST -> navigator.navigate(PlaylistDetailsDestination(media))
+        TabNames.SONG -> { PlayerViewModel.play(media as StreamInfoItem) }
+        TabNames.ARTIST -> navigator.navigate(ArtistDetailsDestination(media as ChannelInfoItem))
+        TabNames.ALBUM -> navigator.navigate(AlbumDetailsDestination(media as PlaylistInfoItem))
+        TabNames.PLAYLIST -> navigator.navigate(PlaylistDetailsDestination(media as PlaylistInfoItem))
     }
 }
 
 @Composable
-fun ResultViewList(model:SearchListViewModel, navigator: DestinationsNavigator){
+fun ResultViewList(model:SearchListViewModel<out InfoItem>, navigator: DestinationsNavigator){
     // REMEMBER SCROlL STATE FOR LISTENING TO END REACHED
     val state = rememberLazyListState()
 

@@ -5,13 +5,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.schabi.newpipe.extractor.InfoItem
 import org.schabi.newpipe.extractor.Page
 import org.schabi.newpipe.extractor.ServiceList
+import org.schabi.newpipe.extractor.channel.ChannelInfoItem
+import org.schabi.newpipe.extractor.playlist.PlaylistInfoItem
+import org.schabi.newpipe.extractor.stream.StreamInfoItem
 import org.schabi.newpipe.extractor.services.youtube.linkHandler.YoutubeSearchQueryHandlerFactory as YSQHF
 import xyz.jeelpatel.myuz_compose.newpipeutils.LoadStates
 
-abstract class SearchListViewModel : ViewModel() {
+abstract class SearchListViewModel<T> : ViewModel() {
     abstract val filters : List<String>
     abstract val tabname : TabNames
 
@@ -21,7 +23,7 @@ abstract class SearchListViewModel : ViewModel() {
     // public getters, private setters
     var nextpage: Page? = null
         private set
-    var data = mutableStateListOf<InfoItem>()
+    var data = mutableStateListOf<T>()
         private set
     var loading by mutableStateOf(LoadStates.UNINIT)
         private set
@@ -33,19 +35,19 @@ abstract class SearchListViewModel : ViewModel() {
 //      private set
 
 
-    private fun loadFromNewPipe(): List<InfoItem> {
+    private fun loadFromNewPipe(): List<T> {
         val extractor = ServiceList.YouTube.getSearchExtractor(_query, filters , "")
         if (nextpage == null) {
             extractor.fetchPage()
             nextpage = extractor.initialPage.nextPage
             if (nextpage == null) endReached = true
-            return extractor.initialPage.items
+            return extractor.initialPage.items as List<T>
         }
 
         val newPage = extractor.getPage(nextpage)
         nextpage = newPage.nextPage
         if (nextpage == null) endReached = true
-        return newPage.items
+        return newPage.items as List<T>
     }
 
     fun loadmore() {
@@ -81,22 +83,22 @@ enum class TabNames{
     ARTIST
 }
 
-object SongListViewModel : SearchListViewModel(){
+object SongListViewModel : SearchListViewModel<StreamInfoItem>(){
     override val filters = listOf(YSQHF.MUSIC_SONGS)
     override val tabname = TabNames.SONG
 }
 
-object AlbumListViewModel : SearchListViewModel(){
+object AlbumListViewModel : SearchListViewModel<PlaylistInfoItem>(){
     override val filters = listOf(YSQHF.MUSIC_ALBUMS)
     override val tabname = TabNames.ALBUM
 }
 
-object PlaylistListViewModel : SearchListViewModel(){
+object PlaylistListViewModel : SearchListViewModel<PlaylistInfoItem>(){
     override val filters = listOf(YSQHF.MUSIC_PLAYLISTS)
     override val tabname = TabNames.PLAYLIST
 }
 
-object ArtistListViewModel : SearchListViewModel(){
+object ArtistListViewModel : SearchListViewModel<ChannelInfoItem>(){
     override val filters = listOf(YSQHF.MUSIC_ARTISTS)
     override val tabname = TabNames.ARTIST
 }
