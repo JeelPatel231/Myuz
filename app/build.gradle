@@ -80,12 +80,7 @@ dependencies {
     ksp 'io.github.raamcosta.compose-destinations:ksp:1.7.22-beta'              // ksp dep for navigation lib
 
     // exoplayer the lord and saviour for media files
-//    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.1'
-
-    implementation 'com.google.android.exoplayer:exoplayer:2.18.1'
-
-    // UI DEP until i figure out how to use core player without this
-//    implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.1'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.1'
 
     //noinspection GradleDependency
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'             // http requests

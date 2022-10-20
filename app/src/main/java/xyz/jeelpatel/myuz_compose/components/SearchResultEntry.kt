@@ -21,6 +21,7 @@ import org.schabi.newpipe.extractor.InfoItem
 import xyz.jeelpatel.myuz_compose.viewModels.SearchListViewModel
 import xyz.jeelpatel.myuz_compose.viewModels.TabNames
 import xyz.jeelpatel.myuz_compose.newpipeutils.LoadStates
+import xyz.jeelpatel.myuz_compose.views.PlayerViewModel
 import xyz.jeelpatel.myuz_compose.views.destinations.AlbumDetailsDestination
 import xyz.jeelpatel.myuz_compose.views.destinations.ArtistDetailsDestination
 import xyz.jeelpatel.myuz_compose.views.destinations.PlaylistDetailsDestination
@@ -52,7 +53,7 @@ fun SearchResultEntry(media: InfoItem,onClick:()->Unit){
 
 fun searchItemOnClick(media:InfoItem, tabName:TabNames, navigator: DestinationsNavigator) {
     return when (tabName){
-        TabNames.SONG -> {println("media ${media.name}")} // DOES NOTHING FOR NOW
+        TabNames.SONG -> { PlayerViewModel.play(media.url) }
         TabNames.ARTIST -> navigator.navigate(ArtistDetailsDestination(media))
         TabNames.ALBUM -> navigator.navigate(AlbumDetailsDestination(media))
         TabNames.PLAYLIST -> navigator.navigate(PlaylistDetailsDestination(media))
